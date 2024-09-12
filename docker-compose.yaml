@@ -1,0 +1,43 @@
+
+services:
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    env_file:
+      - .env
+
+  api:
+    container_name: gymcoach-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./src:/home/gymcoach/src
+      - ./tests:/home/gymcoach/tests
+      - ./.env:/home/gymcoach/.env  # Ensure .env file is mounted correctly
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    working_dir: /home/gymcoach  # Ensure we're in the right working directory
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    command: bash -c "alembic upgrade head && uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  postgres_data:
