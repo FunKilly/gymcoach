@@ -29,7 +29,7 @@ async def plans(db_session, exercises):
 
 async def test_create_plan(client, exercises, db_session):
     body = PlanPost(
-        name="Kozak plan", description="Plan to gain muscles", exercises=exercises
+        name="Kozak plan 1", description="Plan to gain muscles", exercises=exercises
     )
 
     response = client.post("/plans", json=body.model_dump())
