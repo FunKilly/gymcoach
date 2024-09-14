@@ -43,3 +43,12 @@ COPY .env /home/gymcoach/.env
 
 # Switch to the application directory
 WORKDIR /home/gymcoach/src
+
+RUN echo "Running the migrations"
+
+# Run Alembic migrations and start FastAPI application
+CMD ["bash", "-c", "alembic upgrade head"]
+
+RUN echo "Starting the app"
+CMD ["bash", "-c", " uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload"]
+

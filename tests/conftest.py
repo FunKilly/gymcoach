@@ -2,8 +2,12 @@ from collections.abc import AsyncGenerator, Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine, AsyncSession,
-                                    async_sessionmaker)
+from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+)
 
 from src.app import app
 from src.utils.db import get_async_engine

@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Table,
-                        select)
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship, selectinload
 
