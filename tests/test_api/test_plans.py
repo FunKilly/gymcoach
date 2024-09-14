@@ -21,8 +21,9 @@ async def plans(db_session, exercises):
     ex1 = Exercise(name="deadlift", description="ex description")
     ex2 = Exercise(name="squat", description="ex description")
 
-
-    plan1 = Plan(name="Test plan", description="plan for unit tests", exercises=[ex1,ex2])
+    plan1 = Plan(
+        name="Test plan", description="plan for unit tests", exercises=[ex1, ex2]
+    )
     db_session.add(plan1)
     await db_session.commit()
 
@@ -35,6 +36,7 @@ async def test_create_plan(client, exercises, db_session):
     response = client.post("/plans", json=body.model_dump())
 
     assert response.status_code == 200
+
 
 async def test_get_plans(client, db_session, plans):
     response = client.get("/plans")
