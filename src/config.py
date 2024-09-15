@@ -31,4 +31,5 @@ class Settings(BaseSettings):
         )
 
 
-settings = Settings()
+def get_config():
+    return Settings()

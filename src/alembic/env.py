@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from alembic import context
-from src.config import settings
+from src.config import get_config
 from src.utils.db import Base
 
 # this is the Alembic Config object, which provides
@@ -32,6 +32,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
+    settings = get_config()
     return str(settings.SQLALCHEMY_DATABASE_URI)
 
 
