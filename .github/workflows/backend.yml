@@ -49,9 +49,11 @@ jobs:
           cache: 'poetry'
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-ansi
+        run: |
+          poetry env use python3.12
+          poetry install --no-interaction --no-ansi
 
       - name: Run tests
-        run: pytest tests
+        run: poetry run pytest
 
 
