@@ -39,7 +39,6 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: 1.8.3
-          virtualenvs-create: false
           virtualenvs-in-project: false
 
       - name: Install python
