@@ -26,7 +26,7 @@ jobs:
         BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
         BACKEND_REGION: ${{ vars.BACKEND_REGION }}
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-      working-directory: ${{ vars.TERRAFORM_WORKING_DIRECTORY }}
+      working-directory: "./terraform/ecr"
       run: |
         echo $(pwd)
         terraform init \
@@ -34,7 +34,7 @@ jobs:
           -backend-config='region='$BACKEND_REGION \
           -backend-config='key='$BACKEND_KEY
 
-        terraform apply -target=aws_ecr_repository.main -target=aws_iam_group.ecr_image_pushers -target=aws_iam_group_policy.ecr_images_pushers -target=aws_iam_group_membership.ecr_image_pushers -refresh-only -auto-approve
+        terraform apply  -refresh-only -auto-approve
 
         registry_endpoint=$(terraform output -raw backend_repository_url)
         echo $registry_endpoint
