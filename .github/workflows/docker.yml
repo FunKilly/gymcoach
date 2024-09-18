@@ -28,6 +28,7 @@ jobs:
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
       working-directory: ${{ vars.TERRAFORM_WORKING_DIRECTORY }}
       run: |
+        echo $(pwd)
         terraform init \
           -backend-config='bucket='$BACKEND_BUCKET_NAME \
           -backend-config='region='$BACKEND_REGION \
