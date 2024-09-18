@@ -11,3 +11,8 @@ variable "primary_region" {
   type = string
   default = "eu-central-1"
 }
+
+variable "ecr_image_pushers" {
+  type = list(string)
+  default = ["gymcoach"]
+}
