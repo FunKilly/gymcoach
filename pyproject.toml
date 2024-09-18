@@ -3,7 +3,7 @@ name = "gymcoach"
 version = "0.1.0"
 description = "Application for customizing gym plans"
 authors = ["oskarkowalczyk <kowalczykoskar966@gmail.com>"]
-package-mode=true
+package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.12"
