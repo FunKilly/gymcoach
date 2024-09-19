@@ -1,5 +1,5 @@
 name: Setup terraform
-on: push
+on: workflow_dispatch
 env:
   DOCKER_IMAGE_NAME: "gymcoach"
   TERRAFORM_VERSION: "1.9.5"
@@ -18,17 +18,6 @@ jobs:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
         terraform_wrapper: false
 
-    - name: Download Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: registry-endpoint
-
-    - name: Read Variable
-      id: read-registry-endpoint
-      run: |
-        registry_endpoint=$(cat registry_endpoint.txt)
-        echo "REGISTRY_ENDPOINT=$registry_endpoint" >> $GITHUB_ENV
-
     - id: terraform
       name: Terraform Output
       env:
@@ -37,7 +26,6 @@ jobs:
         BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
         BACKEND_REGION: ${{ vars.BACKEND_REGION }}
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-        REGISTRY_ENDPOINT: $registry_endpoint
       working-directory: "./terraform"
       run: |
         echo $(pwd)
@@ -46,7 +34,7 @@ jobs:
           -backend-config='region='$BACKEND_REGION \
           -backend-config='key='$BACKEND_KEY
 
-        terraform plan
+        terraform apply -auto-approve
 
 
 
