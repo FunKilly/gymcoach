@@ -82,7 +82,10 @@ jobs:
 
     - name: Apply Terraform Plan
       run: |
-        terraform apply -auto-approve tfplan
+        terraform apply -target aws_ecr_repository.main  \
+          -target aws_iam_group.ecr_image_pushers \
+          -target aws_iam_group_policy.ecr_image_pushers \
+          -target aws_iam_group_membership.ecr_image_pushers -auto-approve tfplan
 
     - name: echo registry endpoint
       run: |
