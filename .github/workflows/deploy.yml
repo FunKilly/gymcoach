@@ -74,6 +74,9 @@ jobs:
       with:
         name: terraform-plan
 
+    - name: Initialize Terraform
+      run: terraform init -input=false
+
     - name: Apply Terraform Plan
       run: |
         terraform apply -auto-approve tf.plan
