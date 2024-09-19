@@ -44,7 +44,7 @@ jobs:
         terraform show -json tf.plan | jq '.'
 
     - name: Upload Terraform Plan as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: terraform-plan
         path: tf.plan
@@ -64,9 +64,10 @@ jobs:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
 
     - name: Download Terraform Plan Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: terraform-plan
+        path: tf.plan
 
     - name: Apply Terraform Plan
       run: |
@@ -112,83 +113,84 @@ jobs:
         push: true
         tags: ${{ steps.terraform.outputs.registry_endpoint }}:${{ steps.image-version.outputs.version }}
 
-  terraform-architecture-plan:
-    needs: docker-apply
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - id: setup
-        name: Setup `terraform`
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-          terraform_wrapper: false
-
-      - id: terraform
-        name: Terraform Output
-        env:
-          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
-          BACKEND_REGION: ${{ vars.BACKEND_REGION }}
-          BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-        working-directory: "./terraform"
-        run: |
-          echo $(pwd)
-          terraform init \
-            -backend-config='bucket='$BACKEND_BUCKET_NAME \
-            -backend-config='region='$BACKEND_REGION \
-            -backend-config='key='$BACKEND_KEY
-
-          terraform plan -out=tf.plan
-          
-          terraform show -json tf.plan | jq '.'
-
-      - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-architecture-plan
-          path: tf.plan
-
-  terraform-architecture-apply:
-    if: github.event_name == 'workflow_dispatch'
-    needs: terraform-architecture-plan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - id: setup
-        name: Setup `terraform`
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-          terraform_wrapper: false
-
-      - name: Download Terraform Plan Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: terraform-architecture-plan
-
-      - id: terraform
-        name: Terraform Output
-        env:
-          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
-          BACKEND_REGION: ${{ vars.BACKEND_REGION }}
-          BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-        working-directory: "./terraform"
-        run: |
-          echo $(pwd)
-          terraform init \
-            -backend-config='bucket='$BACKEND_BUCKET_NAME \
-            -backend-config='region='$BACKEND_REGION \
-            -backend-config='key='$BACKEND_KEY
-
-          terraform apply -auto-approve tf.plan
+#  terraform-architecture-plan:
+#    needs: docker-apply
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - id: setup
+#        name: Setup `terraform`
+#        uses: hashicorp/setup-terraform@v3
+#        with:
+#          terraform_version: ${{ env.TERRAFORM_VERSION }}
+#          terraform_wrapper: false
+#
+#      - id: terraform
+#        name: Terraform Output
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
+#          BACKEND_REGION: ${{ vars.BACKEND_REGION }}
+#          BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
+#        working-directory: "./terraform"
+#        run: |
+#          echo $(pwd)
+#          terraform init \
+#            -backend-config='bucket='$BACKEND_BUCKET_NAME \
+#            -backend-config='region='$BACKEND_REGION \
+#            -backend-config='key='$BACKEND_KEY
+#
+#          terraform plan -out=tf.plan
+#
+#          terraform show -json tf.plan | jq '.'
+#
+#      - name: Upload Terraform Plan as Artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: terraform-architecture-plan
+#          path: tf.plan
+#
+#  terraform-architecture-apply:
+#    if: github.event_name == 'workflow_dispatch'
+#    needs: terraform-architecture-plan
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - id: setup
+#        name: Setup `terraform`
+#        uses: hashicorp/setup-terraform@v3
+#        with:
+#          terraform_version: ${{ env.TERRAFORM_VERSION }}
+#          terraform_wrapper: false
+#
+#      - name: Download Terraform Plan Artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: terraform-architecture-plan
+#          path: tf.plan
+#
+#      - id: terraform
+#        name: Terraform Output
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
+#          BACKEND_REGION: ${{ vars.BACKEND_REGION }}
+#          BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
+#        working-directory: "./terraform"
+#        run: |
+#          echo $(pwd)
+#          terraform init \
+#            -backend-config='bucket='$BACKEND_BUCKET_NAME \
+#            -backend-config='region='$BACKEND_REGION \
+#            -backend-config='key='$BACKEND_KEY
+#
+#          terraform apply -auto-approve tf.plan
 
 
 
