@@ -1,11 +1,13 @@
-name: Docker build and push
-on: workflow_dispatch
+name: Setup terraform plan
+on:
+  push:
+  workflow_dispatch:
 env:
   DOCKER_IMAGE_NAME: "gymcoach"
   TERRAFORM_VERSION: "1.9.5"
 
 jobs:
-  docker:
+  docker-plan:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -26,16 +28,43 @@ jobs:
         BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
         BACKEND_REGION: ${{ vars.BACKEND_REGION }}
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-      working-directory: "./terraform/ecr"
+      working-directory: "./terraform"
       run: |
         echo $(pwd)
         terraform init \
           -backend-config='bucket='$BACKEND_BUCKET_NAME \
           -backend-config='region='$BACKEND_REGION \
           -backend-config='key='$BACKEND_KEY
+        
+        terraform plan -target aws_ecr_repository.main -target
+          aws_iam_group.ecr_image_pushers -target
+          aws_iam_group_policy.ecr_image_pushers
+          aws_iam_group_membership.ecr_image_pushers -out=tf.plan
+        
+        terraform show -json tf.plan | jq '.'
 
-        terraform apply -auto-approve
+    - name: Upload Terraform Plan as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: tf.plan
 
+
+  docker-apply:
+    if: github.event_name == 'workflow_dispatch'
+    needs: docker-plan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Terraform Plan Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-plan
+
+    - name: Apply Terraform Plan
+      run: terraform apply -auto-approve tf.plan
+
+    - name: echo registry endpoint
+      run: |
         registry_endpoint=$(terraform output -raw backend_repository_url)
         echo "registry_endpoint=$registry_endpoint" >> "$GITHUB_OUTPUT"
 
@@ -69,5 +98,38 @@ jobs:
         context: ${{ env.DOCKER_WORKING_DIRECTORY }}
         push: true
         tags: ${{ steps.terraform.outputs.registry_endpoint }}:${{ steps.image-version.outputs.version }}
+
+  terraform-architecture:
+    needs: docker-apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - id: setup
+        name: Setup `terraform`
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - id: terraform
+        name: Terraform Output
+        env:
+          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
+          BACKEND_REGION: ${{ vars.BACKEND_REGION }}
+          BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
+        working-directory: "./terraform"
+        run: |
+          echo $(pwd)
+          terraform init \
+            -backend-config='bucket='$BACKEND_BUCKET_NAME \
+            -backend-config='region='$BACKEND_REGION \
+            -backend-config='key='$BACKEND_KEY
+
+          terraform apply -auto-approve
+
 
 
