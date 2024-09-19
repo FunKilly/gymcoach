@@ -1,6 +1,6 @@
 name: Setup terraform plan
 on:
-  workflow_dispatch:
+  push:
 env:
   DOCKER_IMAGE_NAME: "gymcoach"
   TERRAFORM_VERSION: "1.9.5"
@@ -38,15 +38,15 @@ jobs:
         terraform plan -target aws_ecr_repository.main  \
           -target aws_iam_group.ecr_image_pushers \
           -target aws_iam_group_policy.ecr_image_pushers \
-          -target aws_iam_group_membership.ecr_image_pushers -out=tf.plan
+          -target aws_iam_group_membership.ecr_image_pushers -out=tfplan
         
-        terraform show -json tf.plan | jq '.'
+        terraform show -json tfplan | jq '.'
 
     - name: Upload Terraform Plan as Artifact
       uses: actions/upload-artifact@v4
       with:
         name: terraform-plan
-        path: ./terraform/tf.plan
+        path: ./terraform/tfplan
 
 
   docker-apply:
@@ -83,7 +83,7 @@ jobs:
 
     - name: Apply Terraform Plan
       run: |
-        terraform apply -auto-approve tf.plan
+        terraform apply -auto-approve tfplan
 
     - name: echo registry endpoint
       run: |
@@ -151,15 +151,15 @@ jobs:
             -backend-config='region='$BACKEND_REGION \
             -backend-config='key='$BACKEND_KEY
 
-          terraform plan -out=tf.plan
+          terraform plan -out=tfplan
           
-          terraform show -json tf.plan | jq '.'
+          terraform show -json tfplan | jq '.'
 
       - name: Upload Terraform Plan as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: terraform-architecture-plan
-          path: ./terraform/tf.plan
+          path: ./terraform/tfplan
 
   terraform-architecture-apply:
     if: github.event_name == 'workflow_dispatch'
@@ -205,7 +205,7 @@ jobs:
             -backend-config='region='$BACKEND_REGION \
             -backend-config='key='$BACKEND_KEY
 
-          terraform apply -auto-approve tf.plan
+          terraform apply -auto-approve tfplan
 
 
 
