@@ -30,7 +30,7 @@ jobs:
         BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
         BACKEND_REGION: ${{ vars.BACKEND_REGION }}
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-      working-directory: "./terraform/ecr"
+      working-directory: "./terraform"
       run: |
         terraform init \
           -backend-config='bucket='$BACKEND_BUCKET_NAME \

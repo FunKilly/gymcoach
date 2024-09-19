@@ -37,7 +37,6 @@ jobs:
         terraform apply -auto-approve
 
         registry_endpoint=$(terraform output -raw backend_repository_url)
-        echo $registry_endpoint
         echo "registry_endpoint=$registry_endpoint" >> "$GITHUB_OUTPUT"
 
     - id: image-version
@@ -70,12 +69,5 @@ jobs:
         context: ${{ env.DOCKER_WORKING_DIRECTORY }}
         push: true
         tags: ${{ steps.terraform.outputs.registry_endpoint }}:${{ steps.image-version.outputs.version }}
-    - name: Set Registry Endpoint
-      run: |
-        echo "$registry_endpoint" > registry_endpoint.txt
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: registry-endpoint
-        path: registry_endpoint.txt
+
 

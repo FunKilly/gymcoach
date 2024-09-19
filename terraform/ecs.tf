@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "my_task" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "${var.registry_endpoint}:latest"  # Image from ECR
+      image     = "${data.terraform_remote_state.first_configuration.outputs.backend_repository_url}:latest"  # Image from ECR
       essential = true
       portMappings = [
         {

@@ -18,11 +18,6 @@ jobs:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
         terraform_wrapper: false
 
-    - name: Download Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: registry-endpoint
-
     - name: Read Variable
       id: read-registry-endpoint
       run: |
@@ -37,7 +32,6 @@ jobs:
         BACKEND_BUCKET_NAME: ${{ vars.BACKEND_BUCKET_NAME }}
         BACKEND_REGION: ${{ vars.BACKEND_REGION }}
         BACKEND_KEY: ${{ vars.APPLICATION_NAME }}-${{ vars.ENVIRONMENT_NAME }}
-        REGISTRY_ENDPOINT: $registry_endpoint
       working-directory: "./terraform"
       run: |
         echo $(pwd)
