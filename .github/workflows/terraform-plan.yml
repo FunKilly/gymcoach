@@ -1,4 +1,4 @@
-name: Setup terraform
+name: Setup terraform plan
 on: push
 env:
   DOCKER_IMAGE_NAME: "gymcoach"
