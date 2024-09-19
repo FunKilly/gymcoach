@@ -63,6 +63,13 @@ jobs:
       with:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ vars.PRIMARY_REGION }}
+
     - name: Download Terraform Plan Artifact
       uses: actions/download-artifact@v4
       with:
@@ -88,13 +95,6 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.PRIMARY_REGION }}
 
     - name: Log in to Amazon ECR
       id: login-ecr
@@ -125,6 +125,13 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.PRIMARY_REGION }}
 
       - id: terraform
         name: Terraform Output
@@ -171,6 +178,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-architecture-plan
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.PRIMARY_REGION }}
 
       - id: terraform
         name: Terraform Output
