@@ -75,7 +75,10 @@ jobs:
         name: terraform-plan
 
     - name: Initialize Terraform
-      run: terraform init -input=false
+      run: terraform init \
+          -backend-config='bucket='$BACKEND_BUCKET_NAME \
+          -backend-config='region='$BACKEND_REGION \
+          -backend-config='key='$BACKEND_KEY
 
     - name: Apply Terraform Plan
       run: |
