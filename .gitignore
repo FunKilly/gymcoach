@@ -16,3 +16,6 @@ local.env
 .python-version
 setup.py
 .idea
+.terraform
+.terraform/
+.terraform.lock.hcl

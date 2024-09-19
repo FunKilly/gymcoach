@@ -18,12 +18,6 @@ jobs:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
         terraform_wrapper: false
 
-    - name: Read Variable
-      id: read-registry-endpoint
-      run: |
-        registry_endpoint=$(cat registry_endpoint.txt)
-        echo "REGISTRY_ENDPOINT=$registry_endpoint" >> $GITHUB_ENV
-
     - id: terraform
       name: Terraform Output
       env:
