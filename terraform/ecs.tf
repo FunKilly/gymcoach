@@ -26,8 +26,8 @@ resource "aws_iam_policy_attachment" "ecs_task_execution_policy" {
 }
 
 
-resource "aws_ecs_task_definition" "my_task" {
-  family                   = "my-ecs-task"
+resource "aws_ecs_task_definition" "gymcoach-app" {
+  family                   = "gymcoach-app"
   requires_compatibilities = ["EC2"]  # EC2 for running on EC2 instances
   network_mode              = "awsvpc"  # For VPC networking
   execution_role_arn        = aws_iam_role.ecs_task_execution_role.arn
@@ -61,23 +61,18 @@ resource "aws_ecs_task_definition" "my_task" {
 resource "aws_ecs_service" "my_ecs_service" {
   name            = "my-ecs-service"
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
-  task_definition = aws_ecs_task_definition.my_task.arn
+  task_definition = aws_ecs_task_definition.gymcoach-app.arn
   desired_count   = 1  # Number of tasks to run
   launch_type     = "EC2"
 
-  network_configuration {
-    subnets         = [aws_subnet.public_subnet.id]
-    security_groups = [aws_security_group.my_ecs_sg.id]
-    assign_public_ip = true
-  }
 }
 
 
 resource "aws_instance" "ecs_instance" {
-  ami                         = "ami-12345678"  # Use ECS-optimized AMI
+  ami                         = "ami-0e04bcbe83a83792e"  # Use ECS-optimized AMI
   instance_type               = "t2.micro"
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
-  key_name                    = "my-key"
+
   vpc_security_group_ids      = [aws_security_group.my_ecs_sg.id]
   subnet_id                   = aws_subnet.public_subnet.id
 
