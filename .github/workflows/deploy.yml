@@ -36,9 +36,9 @@ jobs:
           -backend-config='region='$BACKEND_REGION \
           -backend-config='key='$BACKEND_KEY
         
-        terraform plan -target aws_ecr_repository.main 
-          -target aws_iam_group.ecr_image_pushers 
-          -target aws_iam_group_policy.ecr_image_pushers
+        terraform plan -target aws_ecr_repository.main  \
+          -target aws_iam_group.ecr_image_pushers \
+          -target aws_iam_group_policy.ecr_image_pushers \
           -target aws_iam_group_membership.ecr_image_pushers -out=tf.plan
         
         terraform show -json tf.plan | jq '.'
