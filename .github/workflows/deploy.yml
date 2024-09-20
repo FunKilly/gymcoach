@@ -115,7 +115,7 @@ jobs:
 
     - name: Debug output
       run: |
-        echo "Registry Endpoint: ${{ steps.terraform.outputs.registry_endpoint }}"
+        echo "Registry Endpoint: ${{ steps.registry_endpoint.outputs.registry_endpoint }}"
         echo "Version: ${{ steps.image-version.outputs.version }}"
 
     - name: Build and push Docker image to ECR

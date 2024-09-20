@@ -19,9 +19,21 @@ resource "aws_internet_gateway" "my_igw" {
 }
 
 # Create Public Subnet
-resource "aws_subnet" "public_subnet" {
+resource "aws_subnet" "public_subnet_1" {
   vpc_id            = aws_vpc.my_vpc.id
   cidr_block        = "10.0.3.0/24"
+  availability_zone = "eu-central-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "my-ecs-public-subnet"
+  }
+}
+
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = "10.0.4.0/24"
+  availability_zone = "eu-central-1b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -45,7 +57,12 @@ resource "aws_route_table" "public_route_table" {
 
 # Associate Route Table with Public Subnet
 resource "aws_route_table_association" "public_subnet_association" {
-  subnet_id      = aws_subnet.public_subnet.id
+  subnet_id      = aws_subnet.public_subnet_1.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table_association" "public_subnet_association" {
+  subnet_id      = aws_subnet.public_subnet_2.id
   route_table_id = aws_route_table.public_route_table.id
 }
 
