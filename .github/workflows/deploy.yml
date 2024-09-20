@@ -30,10 +30,6 @@ jobs:
       working-directory: "./terraform"
       run: |
         echo $(pwd)
-        terraform init \
-          -backend-config='bucket='$BACKEND_BUCKET_NAME \
-          -backend-config='region='$BACKEND_REGION \
-          -backend-config='key='$BACKEND_KEY
         
         terraform plan -target aws_ecr_repository.main  \
           -target aws_iam_group.ecr_image_pushers \
@@ -72,13 +68,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: terraform-plan
-
-    - name: Initialize Terraform
-      run: |
-        terraform init \
-          -backend-config='bucket='$BACKEND_BUCKET_NAME \
-          -backend-config='region='$BACKEND_REGION \
-          -backend-config='key='$BACKEND_KEY
 
     - name: Apply Terraform Plan
       run: |
