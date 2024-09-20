@@ -60,12 +60,12 @@ resource "aws_ecs_service" "my_ecs_service" {
 
 
 resource "aws_instance" "ecs_instance" {
-  ami                         = "ami-0e04bcbe83a83792e"  # Use ECS-optimized AMI
+  ami                         = "ami-0e04bcbe83a83792e"
   instance_type               = "t2.micro"
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
 
   vpc_security_group_ids      = [aws_security_group.my_ecs_sg.id]
-  subnet_id                   = aws_subnet.public_subnet.id
+  subnet_id              = aws_subnet.public_subnet_1.id
 
   # Ensure this EC2 instance registers with the ECS cluster
   user_data = <<-EOF
