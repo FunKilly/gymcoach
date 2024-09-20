@@ -18,4 +18,3 @@ setup.py
 .idea
 .terraform
 .terraform/
-.terraform.lock.hcl
