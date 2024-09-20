@@ -2,29 +2,6 @@ resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = "my-ecs-cluster"
 }
 
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "ecs_task_execution_policy" {
-  name = "AmazonECSTaskExecutionRolePolicy"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  roles      = [aws_iam_role.ecs_task_execution_role.name]
-}
-
 
 resource "aws_ecs_task_definition" "gymcoach-app" {
   family                   = "gymcoach-app"
@@ -136,14 +113,14 @@ resource "aws_iam_policy_attachment" "ecr_read_policy" {
 resource "aws_subnet" "private_1" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = "10.0.1.0/24"
-  availability_zone = "eu-central-1"
+  availability_zone = "eu-central-1a"
   map_public_ip_on_launch = false
 }
 
 resource "aws_subnet" "private_2" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = "10.0.2.0/24"
-  availability_zone = "eu-central-1"
+  availability_zone = "eu-central-1b"
   map_public_ip_on_launch = false
 }
 
