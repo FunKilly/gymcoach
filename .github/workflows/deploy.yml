@@ -117,12 +117,12 @@ jobs:
         echo "Registry Endpoint: ${{ steps.terraform.outputs.registry_endpoint }}"
         echo "Version: ${{ steps.image-version.outputs.version }}"
 
-    - name: Build and push Docker image to ACR
+    - name: Build and push Docker image to ECR
       uses: docker/build-push-action@v6
       with:
         context: ${{ env.DOCKER_WORKING_DIRECTORY }}
         push: true
-        tags: ${{ steps.terraform.outputs.registry_endpoint }}:${{ steps.image-version.outputs.version }}
+        tags: ${{ steps.terraform.outputs.registry_endpoint }}.${{ steps.image-version.outputs.version }}
 
   terraform-architecture-plan:
     needs: docker-apply
