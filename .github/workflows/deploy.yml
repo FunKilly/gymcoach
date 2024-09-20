@@ -95,6 +95,7 @@ jobs:
           -target aws_iam_group_membership.ecr_image_pushers -auto-approve tfplan
 
     - name: echo registry endpoint
+      id: registry_endpoint
       working-directory: "./terraform"
       run: |
         registry_endpoint=$(terraform output -raw backend_repository_url)
@@ -122,7 +123,7 @@ jobs:
       with:
         context: ${{ env.DOCKER_WORKING_DIRECTORY }}
         push: true
-        tags: ${{ steps.terraform.outputs.registry_endpoint }}.${{ steps.image-version.outputs.version }}
+        tags: ${{ steps.registry_endpoint.outputs.registry_endpoint }}:${{ steps.image-version.outputs.version }}
 
   terraform-architecture-plan:
     needs: docker-apply
