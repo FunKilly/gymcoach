@@ -65,6 +65,20 @@ resource "aws_ecs_service" "my_ecs_service" {
   desired_count   = 1  # Number of tasks to run
   launch_type     = "EC2"
 
+  # Load balancer configuration
+  load_balancer {
+    target_group_arn = aws_lb_target_group.my_target_group.arn
+    container_name   = "my-container"
+    container_port   = 80
+  }
+
+  network_configuration {
+    subnets         = [aws_subnet.private_1.id, aws_subnet.private_2.id]  # Use private subnets for tasks
+    security_groups = [aws_security_group.my_ecs_sg.id]              # Security group for ECS tasks
+  }
+
+  depends_on = [aws_lb.my_alb]
+
 }
 
 
@@ -116,6 +130,21 @@ resource "aws_iam_policy_attachment" "ecr_read_policy" {
   name =  "EC2ReadPolicy"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   roles      = [aws_iam_role.ecs_instance_role.name]
+}
+
+
+resource "aws_subnet" "private_1" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "eu-central-1"
+  map_public_ip_on_launch = false
+}
+
+resource "aws_subnet" "private_2" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "eu-central-1"
+  map_public_ip_on_launch = false
 }
 
 
