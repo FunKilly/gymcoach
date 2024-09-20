@@ -76,6 +76,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: terraform-plan
+        path: ./terraform
 
     - name: Initialize Terraform
       working-directory: "./terraform"
@@ -189,6 +190,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-architecture-plan
+          path: ./terraform
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
