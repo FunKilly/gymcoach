@@ -19,6 +19,14 @@ jobs:
         terraform_version: ${{ env.TERRAFORM_VERSION }}
         terraform_wrapper: false
 
+    - name: Terraform init
+      working-directory: "./terraform"
+      run: |
+        terraform init \
+          -backend-config='bucket='$BACKEND_BUCKET_NAME \
+          -backend-config='region='$BACKEND_REGION \
+          -backend-config='key='$BACKEND_KEY
+
     - id: terraform
       name: Terraform Output
       env:
@@ -30,11 +38,7 @@ jobs:
       working-directory: "./terraform"
       run: |
         echo $(pwd)
-        terraform init \
-          -backend-config='bucket='$BACKEND_BUCKET_NAME \
-          -backend-config='region='$BACKEND_REGION \
-          -backend-config='key='$BACKEND_KEY
-        
+
         terraform plan -target aws_ecr_repository.main  \
           -target aws_iam_group.ecr_image_pushers \
           -target aws_iam_group_policy.ecr_image_pushers \
@@ -73,11 +77,16 @@ jobs:
       with:
         name: terraform-plan
 
-
-    - name: Apply Terraform Plan
+    - name: Initialize Terraform
       working-directory: "./terraform"
       run: |
-        terraform init 
+        terraform init \
+          -backend-config='bucket='$BACKEND_BUCKET_NAME \
+          -backend-config='region='$BACKEND_REGION \
+          -backend-config='key='$BACKEND_KEY
+
+    - name: Apply Terraform Plan
+      run: |
         terraform apply -target aws_ecr_repository.main  \
           -target aws_iam_group.ecr_image_pushers \
           -target aws_iam_group_policy.ecr_image_pushers \
@@ -144,7 +153,10 @@ jobs:
         working-directory: "./terraform"
         run: |
           echo $(pwd)
-          terraform init 
+          terraform init \
+            -backend-config='bucket='$BACKEND_BUCKET_NAME \
+            -backend-config='region='$BACKEND_REGION \
+            -backend-config='key='$BACKEND_KEY
 
           terraform plan -out=tfplan
           
