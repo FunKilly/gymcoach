@@ -86,6 +86,7 @@ jobs:
           -backend-config='key='$BACKEND_KEY
 
     - name: Apply Terraform Plan
+      working-directory: "./terraform"
       run: |
         terraform apply -target aws_ecr_repository.main  \
           -target aws_iam_group.ecr_image_pushers \
@@ -93,6 +94,7 @@ jobs:
           -target aws_iam_group_membership.ecr_image_pushers -auto-approve tfplan
 
     - name: echo registry endpoint
+      working-directory: "./terraform"
       run: |
         registry_endpoint=$(terraform output -raw backend_repository_url)
         echo "registry_endpoint=$registry_endpoint" >> "$GITHUB_OUTPUT"
