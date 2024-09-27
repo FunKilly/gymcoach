@@ -1,20 +1,20 @@
-idea/
-.cache/
-.pytest_cache/
-__pycache__/
-scripts/
-public/
-env/
-data/
+    idea/
+    .cache/
+    .pytest_cache/
+    __pycache__/
+    scripts/
+    public/
+    env/
+    data/
 
-.env
-local.env
-*.swp
-*.swo
-*.tox
-*.py[ozdc]
-.python-version
-setup.py
-.idea
-.terraform
-.terraform/
+    .env
+    local.env
+    *.swp
+    *.swo
+    *.tox
+    *.py[ozdc]
+    .python-version
+    setup.py
+    .idea
+    .terraform
+    .terraform/

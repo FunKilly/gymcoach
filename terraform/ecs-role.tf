@@ -16,6 +16,17 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_cloudwatch_logs" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/my-container"
+  retention_in_days = 7  # Optional: Retain logs for 7 days
+}
+
+
 resource "aws_iam_policy_attachment" "ecs_task_execution_policy" {
   name = "AmazonECSTaskExecutionRolePolicy"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"

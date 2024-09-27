@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "${data.terraform_remote_state.first_configuration.outputs.backend_repository_url}:latest"  # Image from ECR
+      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.35"  # Image from ECR
       essential = true
       portMappings = [
         {
@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
         logDriver = "awslogs"
         options = {
           "awslogs-group"         = "/ecs/my-container"
-          "awslogs-region"        = "us-east-1"
+          "awslogs-region"        = "eu-central-1"
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -60,7 +60,7 @@ resource "aws_ecs_service" "my_ecs_service" {
 
 
 resource "aws_instance" "ecs_instance" {
-  ami                         = "ami-0e04bcbe83a83792e"
+  ami                         = "ami-099d1a494e1ddfd58"
   instance_type               = "t2.micro"
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
 

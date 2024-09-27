@@ -42,7 +42,7 @@ COPY alembic.ini /home/gymcoach
 # COPY .env /home/gymcoach/.env
 
 # Switch to the application directory
-WORKDIR /home/gymcoach/src
+WORKDIR /home/gymcoach
 
 RUN echo "Running the migrations and starting the app"
 
