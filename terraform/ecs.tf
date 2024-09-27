@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.35"  # Image from ECR
+      image     = "${data.terraform_remote_state.first_configuration.outputs.backend_repository_url}:latest"  # Image from ECR
       essential = true
       portMappings = [
         {
