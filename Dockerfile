@@ -38,12 +38,11 @@ RUN poetry config virtualenvs.create false \
 # Copy application and tests
 COPY tests/ tests/
 COPY src/ src/
-COPY alembic.ini /home/gymcoach
+COPY alembic.ini .
 # COPY .env /home/gymcoach/.env
 
-# Switch to the application directory
-WORKDIR /home/gymcoach
 
+RUN ls
 RUN echo "Running the migrations and starting the app"
 
 # Run Alembic migrations and start FastAPI application
