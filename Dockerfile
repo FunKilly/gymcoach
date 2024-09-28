@@ -39,7 +39,6 @@ RUN poetry config virtualenvs.create false \
 COPY tests/ tests/
 COPY src/ src/
 COPY alembic.ini .
-# COPY .env /home/gymcoach/.env
 
 
 RUN ls

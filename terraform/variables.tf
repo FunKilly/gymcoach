@@ -28,3 +28,17 @@ variable "ecr_image_pushers" {
   type = list(string)
   default = ["gymcoach"]
 }
+
+variable "db_username" {
+  description = "Database username"
+  type        = string
+  default = "gymcoach"
+}
+
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default = "gymcoachdb"
+
+}

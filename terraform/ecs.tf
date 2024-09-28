@@ -2,7 +2,6 @@ resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = "my-ecs-cluster"
 }
 
-
 resource "aws_ecs_task_definition" "gymcoach-app" {
   family                   = "gymcoach-app"
   requires_compatibilities = ["EC2"]  # EC2 for running on EC2 instances
@@ -14,7 +13,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "${data.terraform_remote_state.first_configuration.outputs.backend_repository_url}:latest"  # Image from ECR
+      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.39"  # Image from ECR
       essential = true
       portMappings = [
         {
@@ -30,6 +29,31 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+      # Add this section to reference secrets
+      secrets = [
+        {
+          name      = "POSTGRES_PASSWORD"  # The environment variable in your container
+          valueFrom = "${aws_db_instance.my_database.master_user_secret.0.secret_arn}:password::"
+        }
+      ]
+      environment = [
+        {
+          name  = "POSTGRES_SERVER"
+          value = aws_db_instance.my_database.endpoint
+        },
+        {
+          name  = "POSTGRES_USER"
+          value = var.db_username
+        },
+        {
+          name  = "POSTGRES_DB"
+          value = aws_db_instance.my_database.db_name
+        },
+        {
+          name  = "POSTGRES_PORT"
+          value = aws_db_instance.my_database.port
+        }
+      ]
     }
   ])
 }
