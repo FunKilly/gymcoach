@@ -51,7 +51,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
         },
         {
           name  = "POSTGRES_PORT"
-          value = aws_db_instance.my_database.port
+          value = tostring(aws_db_instance.my_database.port)
         }
       ]
     }
