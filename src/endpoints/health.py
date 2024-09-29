@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 
-plans_router = APIRouter()
+health_router = APIRouter()
 
 
-@plans_router.get(path="/health")
+@health_router.get(path="/health")
 async def get_health():
     return True
