@@ -42,3 +42,4 @@ resource "aws_iam_group_membership" "ecr_image_pushers" {
   users = var.ecr_image_pushers
   group = aws_iam_group.ecr_image_pushers.name
 }
+

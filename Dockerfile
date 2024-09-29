@@ -40,6 +40,7 @@ COPY tests/ tests/
 COPY src/ src/
 COPY alembic.ini .
 
+EXPOSE 8000
 
 RUN ls
 RUN echo "Running the migrations and starting the app"
