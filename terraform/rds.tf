@@ -33,7 +33,8 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    security_groups = [aws_security_group.my_ecs_sg.id]  # Only allow ECS security group access
+    #security_groups = [aws_security_group.my_ecs_sg.id]  # Only allow ECS security group access
+    cidr_blocks = ["0.0.0.0/0"]  # Allow access from any IP
   }
 
   egress {
