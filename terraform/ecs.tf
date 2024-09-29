@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.39"  # Image from ECR
+      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.42"  # Image from ECR
       essential = true
       portMappings = [
         {
@@ -39,7 +39,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
       environment = [
         {
           name  = "POSTGRES_SERVER"
-          value = aws_db_instance.my_database.endpoint
+          value = aws_db_instance.my_database.address
         },
         {
           name  = "POSTGRES_USER"
@@ -160,6 +160,7 @@ resource "aws_security_group" "my_ecs_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
 
   egress {
     from_port   = 0
