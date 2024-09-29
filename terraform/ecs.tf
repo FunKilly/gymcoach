@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
   container_definitions = jsonencode([
     {
       name      = "my-container"
-      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:2024.09.42"  # Image from ECR
+      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:latest"  # Image from ECR
       essential = true
       portMappings = [
         {
