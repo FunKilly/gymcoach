@@ -4,6 +4,16 @@ resource "aws_lb_target_group" "my_target_group" {
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_vpc.id
   target_type = "ip"
+
+  health_check {
+    path                = "/health"                  # Health check path
+    protocol            = "HTTP"                      # Health check protocol
+    port                = "8000"                      # Port for the health check
+    interval            = 30                          # Interval between health checks
+    timeout             = 5                           # Timeout for health check response
+    healthy_threshold   = 2                           # Healthy threshold count
+    unhealthy_threshold = 2                           # Unhealthy threshold count
+  }
 }
 
 # Listener for ALB to route traffic to the target group
