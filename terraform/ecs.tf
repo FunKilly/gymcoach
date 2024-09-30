@@ -1,19 +1,19 @@
-resource "aws_ecs_cluster" "my_ecs_cluster" {
-  name = "my-ecs-cluster"
+resource "aws_ecs_cluster" "gymcoach_ecs_cluster" {
+  name = "gymcoach-ecs-cluster"
 }
 
 resource "aws_ecs_task_definition" "gymcoach-app" {
   family                   = "gymcoach-app"
   requires_compatibilities = ["EC2"]  # EC2 for running on EC2 instances
-  network_mode              = "awsvpc"  # For VPC networking
-  execution_role_arn        = aws_iam_role.ecs_task_execution_role.arn
-  cpu                       = "256"    # 256 CPU units (¼ CPU)
-  memory                    = "512"    # 512 MB of memory
+  network_mode             = "awsvpc" # For VPC networking
+  execution_role_arn       = aws_iam_role.gymcoach_ecs_task_execution_role.arn
+  cpu                      = "256" # 256 CPU units (¼ CPU)
+  memory                   = "512" # 512 MB of memory
 
   container_definitions = jsonencode([
     {
-      name      = "my-container"
-      image     = "959733372523.dkr.ecr.eu-central-1.amazonaws.com/ecr-gymcoach-sandbox-backend:latest"  # Image from ECR
+      name      = "gymcoach-app-container"
+      image     = "${aws_ecr_repository.gymcoach_ecr_repository.repository_url}:latest" # Image from ECR
       essential = true
       portMappings = [
         {
@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/my-container"
+          "awslogs-group"         = "/ecs/gymcoach-app-container"
           "awslogs-region"        = "eu-central-1"
           "awslogs-stream-prefix" = "ecs"
         }
@@ -32,14 +32,14 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
       # Add this section to reference secrets
       secrets = [
         {
-          name      = "POSTGRES_PASSWORD"  # The environment variable in your container
-          valueFrom = "${aws_db_instance.my_database.master_user_secret.0.secret_arn}:password::"
+          name      = "POSTGRES_PASSWORD" # The environment variable in your container
+          valueFrom = "${aws_db_instance.gymcoach_database.master_user_secret.0.secret_arn}:password::"
         }
       ]
       environment = [
         {
           name  = "POSTGRES_SERVER"
-          value = aws_db_instance.my_database.address
+          value = aws_db_instance.gymcoach_database.address
         },
         {
           name  = "POSTGRES_USER"
@@ -47,11 +47,11 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.my_database.db_name
+          value = aws_db_instance.gymcoach_database.db_name
         },
         {
           name  = "POSTGRES_PORT"
-          value = tostring(aws_db_instance.my_database.port)
+          value = tostring(aws_db_instance.gymcoach_database.port)
         }
       ]
     }
@@ -59,46 +59,46 @@ resource "aws_ecs_task_definition" "gymcoach-app" {
 }
 
 
-resource "aws_ecs_service" "my_ecs_service" {
+resource "aws_ecs_service" "gymcoach_ecs_service" {
   name            = "my-ecs-service"
-  cluster         = aws_ecs_cluster.my_ecs_cluster.id
+  cluster         = aws_ecs_cluster.gymcoach_ecs_cluster.id
   task_definition = aws_ecs_task_definition.gymcoach-app.arn
-  desired_count   = 1  # Number of tasks to run
+  desired_count   = 1 # Number of tasks to run
   launch_type     = "EC2"
 
   # Load balancer configuration
   load_balancer {
-    target_group_arn = aws_lb_target_group.my_target_group.arn
-    container_name   = "my-container"
+    target_group_arn = aws_lb_target_group.gymcoach_alb_target_group.arn
+    container_name   = "gymcoach-app-container"
     container_port   = 8000
   }
 
   network_configuration {
-    subnets         = [aws_subnet.private_1.id, aws_subnet.private_2.id]  # Use private subnets for tasks
-    security_groups = [aws_security_group.my_ecs_sg.id]              # Security group for ECS tasks
+    subnets         = [aws_subnet.gymcoach_private_subnet_1.id, aws_subnet.gymcoach_private_subnet_2.id] # Use private subnets for tasks
+    security_groups = [aws_security_group.gymcoach_ecs_sg.id]
   }
 
-  depends_on = [aws_lb.my_alb]
+  depends_on = [aws_lb.gymcoach_alb]
 
 }
 
 
-resource "aws_instance" "ecs_instance" {
-  ami                         = "ami-099d1a494e1ddfd58"
-  instance_type               = "t2.micro"
-  iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
+resource "aws_instance" "gymcoach_ecs_instance" {
+  ami                  = "ami-099d1a494e1ddfd58"
+  instance_type        = "t2.micro"
+  iam_instance_profile = aws_iam_instance_profile.gymcoach_ecs_instance_profile.name
 
-  vpc_security_group_ids      = [aws_security_group.my_ecs_sg.id]
-  subnet_id              = aws_subnet.public_subnet_1.id
+  vpc_security_group_ids = [aws_security_group.gymcoach_ecs_sg.id]
+  subnet_id              = aws_subnet.gymcoach_public_subnet_1.id
 
   # Ensure this EC2 instance registers with the ECS cluster
   user_data = <<-EOF
     #!/bin/bash
-    echo ECS_CLUSTER=${aws_ecs_cluster.my_ecs_cluster.name} >> /etc/ecs/ecs.config
+    echo ECS_CLUSTER=${aws_ecs_cluster.gymcoach_ecs_cluster.name} >> /etc/ecs/ecs.config
   EOF
 }
 
-resource "aws_iam_role" "ecs_instance_role" {
+resource "aws_iam_role" "gymcoach_ecs_instance_role" {
   name = "ecsInstanceRole"
 
   assume_role_policy = jsonencode({
@@ -115,64 +115,31 @@ resource "aws_iam_role" "ecs_instance_role" {
   })
 }
 
-resource "aws_iam_instance_profile" "ecs_instance_profile" {
+resource "aws_iam_instance_profile" "gymcoach_ecs_instance_profile" {
   name = "ecsInstanceProfile"
-  role = aws_iam_role.ecs_instance_role.name
+  role = aws_iam_role.gymcoach_ecs_instance_role.name
 }
 
 
-resource "aws_iam_policy_attachment" "ecs_instance_policy" {
-  name =  "Ec2InstanceRolePolicy"
+resource "aws_iam_policy_attachment" "gymcoach_ecs_instance_policy" {
+  name       = "Ec2InstanceRolePolicy"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-  roles      = [aws_iam_role.ecs_instance_role.name]
+  roles      = [aws_iam_role.gymcoach_ecs_instance_role.name]
 }
 
 resource "aws_iam_policy_attachment" "ecr_read_policy" {
-  name =  "EC2ReadPolicy"
+  name       = "EC2ReadPolicy"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  roles      = [aws_iam_role.ecs_instance_role.name]
+  roles      = [aws_iam_role.gymcoach_ecs_instance_role.name]
 }
 
-
-resource "aws_subnet" "private_1" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "eu-central-1a"
-  map_public_ip_on_launch = false
+resource "aws_cloudwatch_log_group" "gymcoach_ecs_log_group" {
+  name              = "/ecs/gymcoach-app-container"
+  retention_in_days = 7
 }
 
-resource "aws_subnet" "private_2" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "eu-central-1b"
-  map_public_ip_on_launch = false
-}
-
-
-resource "aws_security_group" "my_ecs_sg" {
-  name        = "ecs-sg"
-  description = "Allow HTTP traffic"
-  vpc_id      = aws_vpc.my_vpc.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_iam_policy_attachment" "gymcoach_ecs_task_execution_policy" {
+  name       = "AmazonECSTaskExecutionRolePolicy"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  roles      = [aws_iam_role.gymcoach_ecs_task_execution_role.name]
 }

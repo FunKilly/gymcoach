@@ -1,44 +1,44 @@
 
 variable "BACKEND_KEY" {
-  type        = string
+  type    = string
   default = "gymcoach-app-sandbox"
 }
 
 variable "BACKEND_BUCKET_NAME" {
-  type        = string
+  type    = string
   default = "gymcoach-oskar"
 }
 
 variable "primary_region" {
-  type = string
+  type    = string
   default = "eu-central-1"
 }
 
 variable "application_name" {
-  type = string
+  type    = string
   default = "gymcoach"
 }
 variable "environment_name" {
-  type = string
+  type    = string
   default = "sandbox"
 }
 
 
 variable "ecr_image_pushers" {
-  type = list(string)
+  type    = list(string)
   default = ["gymcoach"]
 }
 
 variable "db_username" {
   description = "Database username"
   type        = string
-  default = "gymcoach"
+  default     = "gymcoach"
 }
 
 
 variable "db_name" {
   description = "Database name"
   type        = string
-  default = "gymcoachdb"
+  default     = "gymcoachdb"
 
 }

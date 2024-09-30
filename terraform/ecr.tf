@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "main" {
+resource "aws_ecr_repository" "gymcoach_ecr_repository" {
   name                 = "ecr-${var.application_name}-${var.environment_name}-backend"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
@@ -10,13 +10,13 @@ resource "aws_ecr_repository" "main" {
 
 }
 
-resource "aws_iam_group" "ecr_image_pushers" {
+resource "aws_iam_group" "gymcoach_ecr_image_pushers" {
   name = "ecr-${var.application_name}-${var.environment_name}-ecr-image-pushers"
 }
 
-resource "aws_iam_group_policy" "ecr_images_pushers" {
+resource "aws_iam_group_policy" "gymcoach_ecr_images_pushers" {
   name  = "ecr-${var.application_name}-${var.environment_name}-images-push-policy"
-  group = aws_iam_group.ecr_image_pushers.name
+  group = aws_iam_group.gymcoach_ecr_image_pushers.name
   policy = jsonencode(
     {
       Version = "2012-10-17"
@@ -31,7 +31,7 @@ resource "aws_iam_group_policy" "ecr_images_pushers" {
             "ecr:InitiateLayerUpload",
             "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload", ]
-          Resource = aws_ecr_repository.main.arn
+          Resource = aws_ecr_repository.gymcoach_ecr_repository.arn
       }]
     }
   )
@@ -40,6 +40,6 @@ resource "aws_iam_group_policy" "ecr_images_pushers" {
 resource "aws_iam_group_membership" "ecr_image_pushers" {
   name  = "ecr-${var.application_name}-ecr-image-push-membership"
   users = var.ecr_image_pushers
-  group = aws_iam_group.ecr_image_pushers.name
+  group = aws_iam_group.gymcoach_ecr_image_pushers.name
 }
 
