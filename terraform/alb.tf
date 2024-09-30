@@ -16,12 +16,6 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]  # Allow access from the internet on port 80
   }
 
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow access from the internet on port 80
-  }
 
   egress {
     from_port   = 0
