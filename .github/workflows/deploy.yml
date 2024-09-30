@@ -1,4 +1,4 @@
-name: Setup terraform plan
+name: Deploy
 on:
   workflow_dispatch:
 env:
@@ -98,7 +98,7 @@ jobs:
       id: registry_endpoint
       working-directory: "./terraform"
       run: |
-        registry_endpoint=$(terraform output -raw backend_repository_url)
+        registry_endpoint=$(terraform output -raw gymcoach_backend_repository_url)
         echo "registry_endpoint=$registry_endpoint" >> "$GITHUB_OUTPUT"
 
     - id: image-version
