@@ -39,10 +39,10 @@ jobs:
       run: |
         echo $(pwd)
 
-        terraform plan -target aws_ecr_repository.main  \
-          -target aws_iam_group.ecr_image_pushers \
-          -target aws_iam_group_policy.ecr_image_pushers \
-          -target aws_iam_group_membership.ecr_image_pushers -out=tfplan
+        terraform plan -target gymcoach_ecr_repository.main  \
+          -target aws_iam_group.gymcoach_image_pushers_group \
+          -target aws_iam_group_policy.gymcoach_image_pushers_group_policy \
+          -target aws_iam_group_membership.gymcoach_image_pushers_group_membership -out=tfplan
         
         terraform show -json tfplan | jq '.'
 
@@ -89,10 +89,10 @@ jobs:
     - name: Apply Terraform Plan
       working-directory: "./terraform"
       run: |
-        terraform apply -target aws_ecr_repository.main  \
-          -target aws_iam_group.ecr_image_pushers \
-          -target aws_iam_group_policy.ecr_image_pushers \
-          -target aws_iam_group_membership.ecr_image_pushers -auto-approve tfplan
+        terraform apply -target aws_ecr_repository.gymcoach_ecr_repository  \
+          -target aws_iam_group.gymcoach_image_pushers_group \
+          -target aws_iam_group_policy.gymcoach_image_pushers_group_policy \
+          -target aws_iam_group_membership.gymcoach_image_pushers_group_membership -auto-approve tfplan
 
     - name: echo registry endpoint
       id: registry_endpoint
