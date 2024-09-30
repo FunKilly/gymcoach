@@ -1,13 +1,12 @@
+import logging
 from typing import Literal
+from urllib.parse import quote_plus
 
 from pydantic import PostgresDsn, computed_field
 from pydantic_core import MultiHostUrl
-from urllib.parse import quote_plus
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-import logging
 log = logging.getLogger(__name__)
-
 
 
 class Settings(BaseSettings):
@@ -27,7 +26,6 @@ class Settings(BaseSettings):
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
         encoded_password = quote_plus(self.POSTGRES_PASSWORD)
-        log.error(f"port:{self.POSTGRES_PORT} server:{self.POSTGRES_SERVER} user:{self.POSTGRES_USER} password:{self.POSTGRES_PASSWORD} db:{self.POSTGRES_DB}")
         return MultiHostUrl.build(
             scheme="postgresql+asyncpg",
             username=self.POSTGRES_USER,

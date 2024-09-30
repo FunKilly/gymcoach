@@ -9,21 +9,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Run black in check mode
-echo "Running black..."
-black --check src tests
+# Run ruff for linting (includes formatting checks)
+echo "Running ruff..."
+ruff check src tests
 
 if [ $? -ne 0 ]; then
-    echo "black failed. Please format your code."
-    exit 1
-fi
-
-# Run flake8 for linting
-echo "Running flake8..."
-flake8 src tests
-
-if [ $? -ne 0 ]; then
-    echo "flake8 failed. Please fix the linting issues."
+    echo "ruff found issues. Please fix the reported issues."
     exit 1
 fi
 
